@@ -64,6 +64,7 @@ public class MonoTest {
                 });
 
         mono.subscribe(s -> log.info("Value: {}", s), e -> log.info("Something bad happened !!!"));
+        mono.subscribe(s -> log.info("Value: {}", s), Throwable::printStackTrace);
         log.info("==========================");
         StepVerifier.create(mono)
                 .expectError(RuntimeException.class)
