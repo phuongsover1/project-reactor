@@ -1,7 +1,6 @@
 package com.projectreactor;
 
 import org.junit.jupiter.api.Test;
-import org.reactivestreams.Subscription;
 
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -94,7 +93,7 @@ public class MonoTest {
                 .map(String::toUpperCase);
 
         mono.subscribe(s -> log.info("Value: {}", s), Throwable::printStackTrace, () -> log.info("FINISHED !!!"),
-                Subscription::cancel);
+                subscription -> subscription.request(5));
         log.info("==========================");
         StepVerifier.create(mono)
                 .expectNext(name.toUpperCase())
