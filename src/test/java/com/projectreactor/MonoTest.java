@@ -3,6 +3,8 @@ package com.projectreactor;
 import org.junit.jupiter.api.Test;
 
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 @Slf4j
 /**
@@ -25,5 +27,18 @@ public class MonoTest {
     @Test
     public void test() {
         log.info("Everthing working as intended!!!");
+    }
+
+    @Test
+    public void monoSubscriber() {
+        String name = "William Suane";
+        Mono<String> mono = Mono.just(name)
+                .log();
+
+        mono.subscribe();
+        log.info("==========================");
+        StepVerifier.create(mono)
+                .expectNext(name)
+                .verifyComplete();
     }
 }
