@@ -184,4 +184,24 @@ public class FluxTest {
                 .expectNext(6, 7, 8, 9, 10)
                 .verifyComplete();
     }
+
+    @Test
+    public void connectableFluxAutoConnect() {
+        Flux<Integer> fluxAutoConnect = Flux.range(1, 5)
+                .log()
+//                /.delayElements(Duration.ofMillis(100))
+                .publish()
+                .autoConnect(3);
+        fluxAutoConnect.subscribe(i -> log.info("Sub1 - Number: {}", i));
+        fluxAutoConnect.subscribe(i -> log.info("Sub2 - Number: {}", i));
+        fluxAutoConnect.subscribe(i -> log.info("Sub3 - Number: {}", i));
+
+        /*log.info("=========================================");
+        StepVerifier.create(fluxAutoConnect)
+                .then(fluxAutoConnect::subscribe)
+                .expectNext(1, 2, 3, 4, 5)
+                .expectComplete()
+                .verify();*/
+
+    }
 }
