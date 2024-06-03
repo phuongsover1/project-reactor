@@ -1,5 +1,7 @@
 package com.projectreactor;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,19 @@ public class FluxTest {
         log.info("=========================");
         StepVerifier.create(flux)
                 .expectNext(1, 2, 3, 4, 5)
+                .verifyComplete();
+
+    }
+
+    @Test
+    public void fluxSubscriberFromList() {
+        Flux<Integer> flux = Flux.fromIterable(List.of(1, 2, 3, 4, 5, 6))
+                .log();
+
+        flux.subscribe(i -> log.info("Number: {}", i));
+        log.info("=========================");
+        StepVerifier.create(flux)
+                .expectNext(1, 2, 3, 4, 5, 6)
                 .verifyComplete();
 
     }
