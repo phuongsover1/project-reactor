@@ -134,4 +134,13 @@ public class FluxTest {
     private Flux<Long> createInterval() {
         return Flux.interval(Duration.ofDays(1)).log();
     }
+
+    @Test
+    public void fluxSubscriberPrettyBackpressure() {
+        Flux<Integer> flux = Flux.range(1, 10)
+                .log()
+                .limitRate(3);
+
+        flux.subscribe(i -> log.info("Number: {}", i));
+    }
 }
