@@ -1,12 +1,13 @@
 package com.projectreactor;
 
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
+
+import java.util.List;
 
 @Slf4j
 public class FluxTest {
@@ -43,6 +44,51 @@ public class FluxTest {
                 .expectNext(1, 2, 3, 4, 5, 6)
                 .verifyComplete();
 
+    }
+
+    @Test
+    public void FluxSubscribeWithUglyBackPressureBehind() {
+        Flux<Integer> flux = Flux.range(1, 10)
+                .log();
+
+        flux.subscribe(new Subscriber<Integer>() {
+            private int count = 0;
+            private Subscription subscription;
+            private int requestCount = 2;
+
+            @Override
+            public void onSubscribe(Subscription s) {
+                this.subscription = s;
+                subscription.request(requestCount);
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                ++count;
+                if (count >= requestCount) {
+                    count = 0;
+                    this.subscription.request(requestCount);
+                }
+
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                // TODO Auto-generated method stub
+                throw new UnsupportedOperationException("Unimplemented method 'onError'");
+            }
+
+            @Override
+            public void onComplete() {
+                log.info("COMPLETED !!!");
+            }
+
+        });
+
+        log.info("=========================");
+        StepVerifier.create(flux)
+                .expectNext(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+                .verifyComplete();
     }
 
 }
