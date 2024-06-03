@@ -225,4 +225,29 @@ public class FluxTest {
                 })
                 .verifyComplete();
     }
+
+    @Test
+    public void switchIfEmpty() {
+        Flux<Object> flux = Flux.empty()
+                .switchIfEmpty(Flux.just("Not empty anymore!!!"))
+                .log();
+
+        StepVerifier.create(flux)
+                .expectNext("Not empty anymore!!!")
+                .verifyComplete();
+    }
+
+    @Test
+    public void deferOperator() throws InterruptedException {
+        // Mono<Long> just = Mono.just(System.currentTimeMillis());
+        Mono<Long> defer = Mono.defer(() -> Mono.just(System.currentTimeMillis()));
+        defer.subscribe(l -> log.info("time {}", l));
+        Thread.sleep(100);
+        defer.subscribe(l -> log.info("time {}", l));
+        Thread.sleep(100);
+        defer.subscribe(l -> log.info("time {}", l));
+        Thread.sleep(100);
+        defer.subscribe(l -> log.info("time {}", l));
+
+    }
 }
